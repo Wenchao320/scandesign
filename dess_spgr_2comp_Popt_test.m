@@ -1,3 +1,4 @@
+%
 % script dess_spgr_2comp_Popt_test.m
 % header file to test dess_spgr_2comp_Popt(...)
 %
