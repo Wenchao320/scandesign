@@ -1,4 +1,4 @@
-  function [P, fval, flag] = gmj_GOT_ga(S, costArg, boxconArg, opt)
+  function [P, fval, flag, output, popu] = gmj_GOT_ga(S, costArg, boxconArg, opt)
 
 % default box constraints
 arg.boxcon.sp.aex   = col([1 90]) * pi/180;                             % rad
@@ -51,10 +51,10 @@ ub = [...
 nonlcon = [];
 
 % anonymous function to handle extra arguments
-fn = @(Pv) dess_spgr_2comp_Popt_helper(Pv, S, costArg);
+fn = @(Pv) gmj_GOT_ga_helper(Pv, S, costArg);
 
 % constrained optimization
-[Pv, fval, flag] = ga(fn, nvars, A, b, Aeq, beq, lb, ub, nonlcon, opt);  % [2(S.de+S.sp) 1]
+[Pv, fval, flag, output, popu] = ga(fn, nvars, A, b, Aeq, beq, lb, ub, nonlcon, opt);  % [2(S.de+S.sp) 1]
         
 % convert Pv vec -> P struct for output
 P.de.aex  = Pv(1:S.de);
@@ -64,8 +64,9 @@ P.sp.tr   = Pv(2*S.de+S.sp+1:end);
 end
   
   
-  function cost = dess_spgr_2comp_Popt_helper(Pv, S, costArg)
+  function cost = gmj_GOT_ga_helper(Pv, S, costArg)
 
+Pv = col(Pv);
 % convert Pv vec -> P struct
 P.de.aex = Pv(1:S.de,1);
 P.sp.aex = Pv(S.de+1:S.de+S.sp);
@@ -73,5 +74,9 @@ P.de.tr   = Pv(S.de+S.sp+1:2*S.de+S.sp);
 P.sp.tr   = Pv(2*S.de+S.sp+1:end);
 
 % call cost function
-cost = dess_spgr_2comp_cost(P, costArg{:});
+try
+    cost = dess_spgr_2comp_cost(P, costArg{:});
+catch ME
+    cost = 1e4;
+end
 end
