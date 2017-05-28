@@ -1,0 +1,49 @@
+function printP(P)
+
+% constant declarations
+C.de = length(P.de.aex);
+C.sp = length(P.sp.aex);
+
+s = 1;
+subArg.cost = {...
+  'x.ff.minmax', [0.03 0.21],...
+  'x.ff.nsamp', 5,...
+  'x.T1f.nsamp', s,...
+  'x.T1s.nsamp', s,...
+  'x.T2f.nsamp', s,...
+  'x.T2s.nsamp', s,...
+  'x.kfs.nsamp', 1,...
+  'nu.kap.nsamp', 3};
+  
+% gradient function options
+subArg.grad = {...
+  'x.ff.minmax', [0.03 0.21],...
+  'x.ff.nsamp', 5,...
+  'x.T1f.nsamp', s,...
+  'x.T1s.nsamp', s,...
+  'x.T2f.nsamp', s,...
+  'x.T2s.nsamp', s,...
+  'nu.kap.nsamp', 3};
+
+f = dess_spgr_2comp_cost(P, subArg.cost{:});
+rstd = sqrt(f)   ./ mean([0.03 0.21]);
+
+fprintf('The scan design is (%dDE, %dSP) with f = %0.6f and rstd = %0.4f: ', C.de, C.sp, f, rstd);
+fprintf('\nde.aex: ');
+for i = 1:C.de
+    fprintf('%10.3f', P.de.aex(i) * 180 / pi);
+end
+fprintf('\nsp.aex: ');
+for i = 1:C.sp
+    fprintf('%10.3f', P.sp.aex(i) * 180 / pi);
+end
+fprintf('\nde.tr : ');
+for i = 1:C.de
+    fprintf('%10.3f', P.de.tr(i));
+end
+fprintf('\nsp.tr : ');
+for i = 1:C.sp
+    fprintf('%10.3f', P.sp.tr(i));
+end
+fprintf('\nTotal time: %.1f', sum(P.de.tr(:)) + sum(P.sp.tr(:)));
+fprintf('\n\n');
