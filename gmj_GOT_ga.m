@@ -75,6 +75,7 @@ P.sp.tr   = Pv(2*S.de+S.sp+1:end);
 
 % call cost function
 cost = dess_spgr_2comp_cost(P, costArg{:});
+
 if cost < 0 || cost > 1e6
     cost = 1e6;
 end
