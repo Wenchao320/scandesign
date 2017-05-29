@@ -42,7 +42,6 @@
 %|     .p       [S.de]             dess 'defocusing' echo noise std dev.        def: 3.8607e-4
 %|     .m       [S.de]             dess 'refocusing' echo noise std dev.        def: 3.8607e-4
 %|     .s       [S.sp]             spgr 'defocusing' echo noise std dev.        def: 3.8607e-4
-%|    cond      [1]             max permissible Fisher matrix conditionality    def: 10^20
 %|    tm_cmp    f|t             overall cost time compensation off|on           def: false
 %|
 %|  outputs
@@ -58,7 +57,6 @@
 %|    1.1       2016-04-20      original
 %|    1.2       2016-04-26      corrected to handle joint distributions larger than size [1]
 %|    1.3       2016-08-16      changed format of P and grad
-%|    1.4       2017-05-18      now checks Fisher matrix conditioning before inversion
 
 % constant declarations
 S.de = length(P.de.aex);
@@ -158,7 +156,6 @@ arg.TE.s = 4.67 * ones(S.sp,1);  % ms
 arg.sig.p = 3.8607e-4 * ones(S.de,1);
 arg.sig.m = 3.8607e-4 * ones(S.de,1);
 arg.sig.s = 3.8607e-4 * ones(S.sp,1);
-arg.cond = 10^20;
 arg.tm_cmp = false;
 
 % substitute varargin values as appropriate
@@ -451,12 +448,6 @@ Fs = spgr_2comp_crb(...         % [1 L L]
 
 % total information
 F = squeeze(Fd + Fs);           % [L L]
-
-% check condition number
-if cond(F)>arg.cond
-  error('Fisher matrix condition number in excess of %3e!?\nCheck initialization...',...
-    arg.cond);
-end
 
 % intermediate variable
 M = arg.W / F;

@@ -74,9 +74,9 @@ P.de.tr   = Pv(S.de+S.sp+1:2*S.de+S.sp);
 P.sp.tr   = Pv(2*S.de+S.sp+1:end);
 
 % call cost function
-try
-    cost = dess_spgr_2comp_cost(P, costArg{:});
-catch ME
-    cost = 1e4;
+cost = dess_spgr_2comp_cost(P, costArg{:});
+if cost < 0 || cost > 1e6
+    cost = 1e6;
 end
+
 end
